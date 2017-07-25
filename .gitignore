@@ -30,3 +30,7 @@ notes/*.md
 # hiding fixtures
 intake/fixtures/mock*
 user_accounts/fixtures/mock_profiles.json
+
+
+# docs
+docs/build/*
