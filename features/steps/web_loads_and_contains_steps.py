@@ -14,8 +14,14 @@ def test_flash_message_contains_text(context, text):
     context.test.assertIn(text, element.text)
 
 
+@when('I click the "{link_text}" link')
+def follow_link_with_text(context, link_text):
+    element = context.browser.find_element_by_link_text(link_text)
+    element.click()
+
+
 @when('I click the "{link_text}" link to "{url}"')
-def follow_link_with_text(context, link_text, url):
+def follow_link_with_text_and_url(context, link_text, url):
     selector = 'a[href*="{url}"]'.format(url=url)
     element = context.browser.find_element_by_css_selector(selector)
     # it's a slight break in decorum to assert here, but seems like a useful

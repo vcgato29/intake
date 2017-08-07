@@ -6,6 +6,8 @@ from intake import groups
 from django.conf import settings
 from features.steps import form_input_steps
 
+SUPERUSER_USERNAME = 'superuser'
+
 
 @given('an applicant support user')
 def load_applicant_support_user(context):
@@ -13,6 +15,20 @@ def load_applicant_support_user(context):
     factories.profile_for_org_and_group_names(
         org, group_names=[groups.FOLLOWUP_STAFF, groups.APPLICATION_REVIEWERS],
         is_staff=True)
+
+
+@given('a superuser')
+@given('a superuser at "{org_slug}"')
+def load_superuser(context, org_slug='cfa'):
+    org = Organization.objects.get(slug=org_slug)
+    factories.profile_for_org_and_group_names(
+        org,
+        username=SUPERUSER_USERNAME,
+        group_names=[
+            groups.FOLLOWUP_STAFF,
+            groups.APPLICATION_REVIEWERS],
+        is_staff=True,
+        is_superuser=True)
 
 
 @given('an org user')
@@ -34,6 +50,12 @@ def login_as(context, email):
     context.execute_steps('''Then it should load "accounts/profile/"''')
 
 
+@given('I log in as the superuser')
+def login_as_superuser(context):
+    login_as(
+        context,
+        "bgolder+demo+{}@codeforamerica.org".format(SUPERUSER_USERNAME))
+
 @given('I log in as an applicant support user')
 def login_as_applicant_support_user(context):
     login_as(context, "bgolder+demo+cfa_user@codeforamerica.org")
@@ -44,4 +66,5 @@ def login_as_applicant_support_user(context):
 @when('I log in as an org user at "{org_slug}"')
 def login_as_org_user(context, org_slug='ebclc'):
     login_as(
-        context, "bgolder+demo+{}_user@codeforamerica.org".format(org_slug))
+        context,
+        "bgolder+demo+{}_user@codeforamerica.org".format(org_slug))
