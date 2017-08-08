@@ -80,10 +80,15 @@ def check_link_goes_to_page(context, element_id, url):
         end_url)
 
 
-@then('"{element_class}" should say "{text}"')
-def element_contains_text(context, element_class, text):
-    element = context.browser.find_element_by_class_name(element_class)
-    context.test.assertTrue(text in element.text)
+@then('"{css_selector}" should say')
+@then('"{css_selector}" should say "{text}"')
+def element_contains_text(context, css_selector, text=None):
+    element = context.browser.find_element_by_css_selector(css_selector)
+    if text is None:
+        text_content = context.text.strip()
+    else:
+        text_content = text
+    context.test.assertTrue(text_content in element.text)
 
 
 @then('the main heading should say "{text}"')

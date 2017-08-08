@@ -43,11 +43,11 @@ def click_submit(context, form_class):
 
 @when('I click the "{button_text}" submit button')
 def click_submit_with_text(context, button_text):
-    selector = "button[type='submit']"
+    selector = "input[type='submit']"
     elements = context.browser.find_elements_by_css_selector(selector)
     matching_buttons = [
         element for element in elements
-        if button_text in element.text
+        if button_text == element.get_attribute('value')
     ]
     if len(matching_buttons) != 1:
         raise NoSuchElementException(
@@ -59,7 +59,7 @@ def click_submit_with_text(context, button_text):
 
 @when('the "{input_name}" text input is set to "{value}"')
 def type_in_textarea(context, input_name, value):
-    selector = "input[name=''][type='text']".format(input_name)
+    selector = "input[name='{}'][type='text']".format(input_name)
     text = context.browser.find_element_by_css_selector(selector)
     text.send_keys(value)
 
@@ -77,7 +77,7 @@ def select_django_admin_related_option_by_name(
     selector = "select[name='{}'] option".format(select_name)
     option_elements = context.browser.find_elements_by_css_selector(selector)
     matching_options = [
-        element for element in option_elements if 
+        element for element in option_elements if
         option_name in element.text]
     if len(matching_options) != 1:
         raise NoSuchElementException(

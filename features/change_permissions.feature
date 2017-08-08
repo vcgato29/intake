@@ -25,7 +25,10 @@ Feature:  CfA superuser can manage accounts through the Django Admin
        And I click the "cfa_user" link
        And I select the "auth | group | Can add group" option for "user_permissions_old"
        And I click the "Save" submit button
-      Then ".messagelist li.success" should say "The user \"cfa_user\" was changed successfully."
+      Then ".messagelist li.success" should say
+        """
+        The user "cfa_user" was changed successfully.
+        """
       # And there should be a log that contains "access-audit"
       # And there should be a log that contains "action=add(UserPermission)"
 
@@ -38,7 +41,10 @@ Feature:  CfA superuser can manage accounts through the Django Admin
        And I click the "cfa_user" link
        And I select the "performance_monitors" option for "groups_old"
        And I click the "Save" submit button
-      Then ".messagelist li.success" should say "The user \"cfa_user\" was changed successfully."
+      Then ".messagelist li.success" should say
+        """
+        The user "cfa_user" was changed successfully.
+        """
        # And there should be a log that contains "access-audit"
        # And there should be a log that contains "action=add(UserGroup)"
 
@@ -51,7 +57,10 @@ Feature:  CfA superuser can manage accounts through the Django Admin
        And I click the "is_staff" checkbox
        And I click the "is_superuser" checkbox
        And I click the "Save" submit button
-      Then ".messagelist li.success" should say "The user \"cfa_user\" was changed successfully."
+      Then ".messagelist li.success" should say
+        """
+        The user "cfa_user" was changed successfully.
+        """
       # And there should be a log that contains "access-audit"
       # And there should be a log that contains "action=change"
       # And there should be a log that contains "resource=User"
