@@ -6,32 +6,76 @@ import intake.services.submissions as SubmissionsService
 import intake.services.applications_service as AppsService
 import intake.services.display_form_service as DisplayFormService
 from intake import models
+from intake.serializers import FormSubmissionFollowupListSerializer
+from intake.permissions import FromObjectOrganizationOrStaff
 from intake.views.base_views import ViewAppDetailsMixin, not_allowed
+from rest_framework import generics
+from intake.renderers import TemplateHTMLRendererWithContext
+from rest_framework.permissions import IsAuthenticated
 
 
-class ApplicationDetail(ViewAppDetailsMixin, TemplateView):
-    """Displays detailed information for an org user.
-    """
+# class ApplicationDetail(ViewAppDetailsMixin, TemplateView):
+    # """Displays detailed information for an org user.
+    # """
+    # template_name = "app_detail.jinja"
+
+    # marked_read_flash_message = str(
+    #     "{applicant_name}'s application has been marked \"Read\" and moved to "
+    #     "the \"Needs Status Update\" folder.")
+
+    # def get(self, request, submission_id):
+    #     if request.user.profile.should_see_pdf() and not request.user.is_staff:
+    #         return redirect(
+    #             reverse_lazy('intake-filled_pdf',
+    #                          kwargs=dict(submission_id=submission_id)))
+    #     self.submissions = list(SubmissionsService.get_permitted_submissions(
+    #         request.user, [submission_id]))
+    #     if not self.submissions:
+    #         return not_allowed(request)
+    #     return super().get(request, submission_id)
+
+    # def get_context_data(self, *args, **kwargs):
+    #     context = super().get_context_data(*args, **kwargs)
+    #     self.submission = self.submissions[0]
+    #     display_form, letter_display = \
+    #         DisplayFormService.get_display_form_for_user_and_submission(
+    #             self.request.user, self.submission)
+    #     applications = models.Application.objects.filter(
+    #         form_submission=self.submission)
+    #     if not self.request.user.is_staff:
+    #         applications = applications.filter(
+    #             organization=self.request.user.profile.organization)
+    #         application = applications.first()
+    #         if not application.has_been_opened:
+    #             message = self.marked_read_flash_message.format(
+    #                 applicant_name=self.submission.get_full_name())
+    #             messages.success(self.request, message)
+    #     for application in applications:
+    #         if application.status_updates.exists():
+    #             # latest_status is cached on the model instance
+    #             # for easier template randering. It is not saved to the db
+    #             application.latest_status = \
+    #                 application.status_updates.latest('updated')
+    #     context.update(
+    #         form=display_form,
+    #         submission=self.submission,
+    #         declaration_form=letter_display,
+    #         applications=applications)
+    #     AppsService.handle_apps_opened(self, applications)
+    #     return context
+
+
+class ApplicationDetail(generics.RetrieveAPIView):
+    permission_classes = (
+        IsAuthenticated,
+        FromObjectOrganizationOrStaff,
+    )
+    serializer_class = FormSubmissionFollowupListSerializer
+    renderer_classes = (TemplateHTMLRendererWithContext,)
     template_name = "app_detail.jinja"
 
-    marked_read_flash_message = str(
-        "{applicant_name}'s application has been marked \"Read\" and moved to "
-        "the \"Needs Status Update\" folder.")
-
-    def get(self, request, submission_id):
-        if request.user.profile.should_see_pdf() and not request.user.is_staff:
-            return redirect(
-                reverse_lazy('intake-filled_pdf',
-                             kwargs=dict(submission_id=submission_id)))
-        self.submissions = list(SubmissionsService.get_permitted_submissions(
-            request.user, [submission_id]))
-        if not self.submissions:
-            return not_allowed(request)
-        return super().get(request, submission_id)
-
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-        self.submission = self.submissions[0]
+    def get_renderer_context(self, *args, **kwargs):
+        context = super().get_renderer_context(*args, **kwargs)
         display_form, letter_display = \
             DisplayFormService.get_display_form_for_user_and_submission(
                 self.request.user, self.submission)
@@ -59,6 +103,9 @@ class ApplicationDetail(ViewAppDetailsMixin, TemplateView):
         AppsService.handle_apps_opened(self, applications)
         return context
 
+    def get_object(self):
+        self.submission = models.FormSubmission.objects.get(id=self.kwargs['submission_id'])
+        return self.submission
 
 class ApplicationHistoryView(ApplicationDetail):
     """Displays a list of information abotu the history of this application

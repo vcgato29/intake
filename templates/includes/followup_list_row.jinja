@@ -2,11 +2,11 @@
 <tr class="form_submission" data-key="{{ sub.id }}">
   <td>
   {# ID #}
-    <a href="{{ sub.url }}">{{ sub.id }}</a>
+    <a href="{{ sub.absolute_url }}">{{ sub.id }}</a>
   </td>
   <td>
   {# Received #}
-    <a href="{{ sub.url }}">
+    <a href="{{ sub.absolute_url }}">
       <div class="date_received">
         <div class="date">{{ 
           sub.local_date_received.strftime('%b %-d')

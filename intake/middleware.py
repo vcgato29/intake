@@ -106,8 +106,12 @@ class CountUniqueVisitorsMiddleware(MiddlewareBase):
             response = self.get_response(request)
 
             if is_a_valid_response_code(response):
-                response.view = getattr(response, "context_data", {}).get(
-                    "view", None)
+
+                context_data = getattr(response, "context_data", {})
+                if context_data:
+                    response.view = context_data.get("view", None)
+                else:
+                    response.view = None
                 if request.user.is_authenticated:
                     EventsService.user_page_viewed(request, response)
                 else:

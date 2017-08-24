@@ -1,4 +1,5 @@
 from django.contrib.auth.models import Permission
+from rest_framework import permissions
 
 # apps
 CAN_SEE_APP_STATS = 'view_app_stats'
@@ -14,3 +15,15 @@ def get_all_followup_permissions():
             CAN_SEE_FOLLOWUP_NOTES,
             'add_applicationnote',
             'delete_applicationnote'])
+
+
+
+class FromObjectOrganizationOrStaff(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        if request.user.is_staff:
+            return True
+        return obj.organizations.filter(
+            profiles__user__id=request.user.id).exists()
+
+

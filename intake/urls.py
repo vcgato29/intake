@@ -65,8 +65,7 @@ urlpatterns = [
 
     # PROTECTED VIEWS
     url(r'^application/(?P<submission_id>[0-9]+)/$',
-        login_required(app_detail_views.app_detail),
-        name='intake-app_detail'),
+        app_detail_views.app_detail, name='intake-app_detail'),
 
     url(r'^application/(?P<submission_id>[0-9]+)/history/$',
         login_required(app_detail_views.app_history),

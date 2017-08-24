@@ -51,14 +51,14 @@ class TestApplicationDetail(AppDetailFixturesBaseTestCase):
         self.be_apubdef_user()
         submission = self.a_pubdef_submissions[0]
         response = self.get_page(submission)
-        self.assertEqual(response.context_data['submission'], submission)
+        self.assertEqual(response.renderer_context['submission'], submission)
 
     @patch('intake.notifications.slack_submissions_viewed.send')
     def test_staff_user_can_get_submission_display(self, slack):
         self.be_cfa_user()
         submission = self.a_pubdef_submissions[0]
         response = self.get_page(submission)
-        self.assertEqual(response.context_data['submission'], submission)
+        self.assertEqual(response.renderer_context['submission'], submission)
         self.assertNotContains(response, escape('update-status-button'))
 
     @patch('intake.notifications.slack_submissions_viewed.send')
@@ -74,7 +74,7 @@ class TestApplicationDetail(AppDetailFixturesBaseTestCase):
         self.be_apubdef_user()
         submission = self.combo_submissions[0]
         response = self.get_page(submission)
-        self.assertEqual(response.context_data['submission'], submission)
+        self.assertEqual(response.renderer_context['submission'], submission)
 
     @patch('intake.models.FillablePDF')
     @patch('intake.notifications.slack_submissions_viewed.send')
