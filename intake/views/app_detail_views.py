@@ -76,9 +76,10 @@ class ApplicationDetail(generics.RetrieveAPIView):
 
     def get_renderer_context(self, *args, **kwargs):
         context = super().get_renderer_context(*args, **kwargs)
+        import ipdb; ipdb.set_trace()
         display_form, letter_display = \
             DisplayFormService.get_display_form_for_user_and_submission(
-                self.request.user, self.submission)
+                self.request.user, self.get_object())
         applications = models.Application.objects.filter(
             form_submission=self.submission)
         if not self.request.user.is_staff:
@@ -104,8 +105,16 @@ class ApplicationDetail(generics.RetrieveAPIView):
         return context
 
     def get_object(self):
-        self.submission = models.FormSubmission.objects.get(id=self.kwargs['submission_id'])
+        if not getattr(self, 'submission', None):
+            self.submission = models.FormSubmission.objects.get(
+                id=self.kwargs['submission_id'])
         return self.submission
+
+    def all_present(self, test_object, property_names_arr):
+        for prop_name in property_names_arr:
+            if not getattr(test_object, prop_name, None):
+                return False
+        return True
 
 class ApplicationHistoryView(ApplicationDetail):
     """Displays a list of information abotu the history of this application

@@ -29,7 +29,6 @@ def org_vs_staff_view_switch(org_user_view, staff_user_view):
             return org_user_view(request, *args, **kwargs)
     return switch
 
-
 urlpatterns = [
 
     # PUBLIC VIEWS

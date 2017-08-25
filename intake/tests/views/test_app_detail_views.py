@@ -9,6 +9,7 @@ from user_accounts.models import Organization
 from intake import models
 from intake.tests.base_testcases import IntakeDataTestCase
 from intake.tests import factories
+from user_accounts.tests.factories import app_reviewer, FakeOrganizationFactory
 
 
 class AppDetailFixturesBaseTestCase(IntakeDataTestCase):
@@ -39,8 +40,9 @@ class TestApplicationDetail(AppDetailFixturesBaseTestCase):
 
     @patch('intake.notifications.slack_submissions_viewed.send')
     def test_anonymous_user_is_redirected_to_login(self, slack):
-        self.be_anonymous()
-        submission = self.a_pubdef_submissions[0]
+        org = FakeOrganizationFactory()
+        submission = factories.FormSubmissionWithOrgsFactory(
+            organizations=[org], answers={})
         response = self.get_page(submission)
         self.assertEqual(response.status_code, 302)
         self.assertIn(reverse('user_accounts-login'), response.url)

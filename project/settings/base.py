@@ -65,6 +65,10 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'project.urls'
 
+REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'access_audit.exception_handlers.default_django_exception_handler'
+}
+
 TEMPLATES = [
     {
         'NAME': 'jinja',

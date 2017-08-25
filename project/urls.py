@@ -3,7 +3,9 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib import admin
 from url_robots.views import robots_txt
+from django.conf.urls import handler403
 
+handler403 = 'access_audit.exception_handlers.redirect_on_permission_denied'
 
 urlpatterns = [
     url(r'^robots\.txt$', robots_txt),
